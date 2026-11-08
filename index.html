@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#172554">
+<meta name="description" content="A simple personal work time tracker.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<title>Work Time Tracker</title>
+<style>
+:root{color-scheme:light;--bg:#f4f6fb;--card:#fff;--ink:#172033;--muted:#68738a;--line:#e6eaf1;--blue:#3157d5;--blue2:#eaf0ff;--green:#16865b;--red:#c44949;--shadow:0 8px 28px #18264a0c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+main{max-width:720px;margin:auto;padding:18px 16px 40px}.top{display:flex;justify-content:space-between;align-items:center;margin:4px 0 18px}.brand{font-size:19px;font-weight:800;letter-spacing:-.4px}.sub{font-size:12px;color:var(--muted)}.today{background:linear-gradient(135deg,#172554,#3157d5);color:white;border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+.today .eyebrow{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;opacity:.75;font-weight:700}.total{font-size:42px;font-weight:800;letter-spacing:-1.5px;margin:5px 0 1px;font-variant-numeric:tabular-nums}.today small{opacity:.75}.times{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.timebox{background:#ffffff18;border:1px solid #ffffff28;border-radius:14px;padding:11px 13px}.timebox label{display:block;font-size:11px;opacity:.75}.timebox strong{font-size:17px;font-variant-numeric:tabular-nums}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.btn{border:0;border-radius:14px;padding:14px 12px;font-weight:750;font-size:14px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.start{background:#e6f6ef;color:#126c4a}.end{background:#fff0ef;color:#a83b3b}.primary{background:var(--blue);color:white}.secondary{background:var(--blue2);color:var(--blue)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;margin-top:13px;box-shadow:var(--shadow)}h2{font-size:16px;margin:0 0 13px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field input,.date-input{width:100%;padding:11px 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);font:inherit;min-width:0}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row .btn{flex:1}.hint{color:var(--muted);font-size:12px;margin:9px 0 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#f7f8fc;border-radius:13px;padding:12px}.stat b{display:block;font-size:19px;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted)}
+.record{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.record:first-child{border-top:0}.record-date{font-weight:700}.record-meta{color:var(--muted);font-size:12px;margin-top:3px}.record-right{text-align:right;white-space:nowrap}.record-hours{font-weight:800;font-variant-numeric:tabular-nums}.mini{border:0;background:transparent;color:var(--blue);font-weight:700;padding:5px 7px;cursor:pointer}.danger{color:var(--red)}.empty{color:var(--muted);text-align:center;padding:20px 8px;font-size:13px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.section-head select{border:1px solid var(--line);background:white;border-radius:10px;padding:8px;color:var(--ink)}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 5px}
+@media(max-width:390px){main{padding-left:12px;padding-right:12px}.total{font-size:36px}.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div><div class="brand">Work Time Tracker</div><div class="sub">Your workday, clearly tracked.</div></div><div class="sub" id="todayLabel"></div></div>
+  <section class="today">
+    <div class="eyebrow">Today's recorded time</div>
+    <div class="total" id="todayTotal">00:00</div>
+    <small id="todayStatus">No work time recorded yet</small>
+    <div class="times">
+      <div class="timebox"><label>START</label><strong id="todayStart">—</strong></div>
+      <div class="timebox"><label>END</label><strong id="todayEnd">—</strong></div>
+    </div>
+  </section>
+  <div class="actions">
+    <button class="btn start" id="startBtn">↗  Start work now</button>
+    <button class="btn end" id="endBtn">↙  End work now</button>
+  </div>
+
+  <section class="card">
+    <h2>Add or edit a day</h2>
+    <div class="fields">
+      <div class="field"><label for="workDate">Date</label><input class="date-input" type="date" id="workDate"></div>
+      <div class="field"><label for="startTime">Start time</label><input type="time" id="startTime"></div>
+      <div class="field"><label for="endTime">End time</label><input type="time" id="endTime"></div>
+      <div class="field"><label for="note">Note (optional)</label><input type="text" id="note" placeholder="e.g. Office day" maxlength="80"></div>
+    </div>
+    <div class="row" style="margin-top:13px"><button class="btn primary" id="saveBtn">Save workday</button><button class="btn secondary" id="clearBtn">Clear form</button></div>
+    <p class="hint">You can use the buttons above for automatic timestamps, or enter/edit times manually. Overnight shifts are supported.</p>
+  </section>
+
+  <section class="card">
+    <div class="section-head"><h2>Statistics</h2><select id="period"><option value="week">This week</option><option value="month" selected>This month</option><option value="all">All time</option></select></div>
+    <div class="stats">
+      <div class="stat"><b id="daysStat">0</b><span>Days recorded</span></div>
+      <div class="stat"><b id="hoursStat">0h</b><span>Total time</span></div>
+      <div class="stat"><b id="avgStat">0h</b><span>Daily average</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-head"><h2>Work history</h2><button class="mini" id="exportBtn">↓ Export CSV</button></div>
+    <div id="history"></div>
+  </section>
+  <footer>Saved on this device · No account required</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const KEY='work-time-tracker-v1';
+let records=load(), editing=null;
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(records))}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function fmtTime(t){if(!t)return '—';const [h,m]=t.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
+function minutes(r){if(!r?.start||!r?.end)return 0;let [sh,sm]=r.start.split(':').map(Number),[eh,em]=r.end.split(':').map(Number);let n=eh*60+em-(sh*60+sm);if(n<0)n+=1440;return n}
+function duration(n){return `${Math.floor(n/60)}h ${String(n%60).padStart(2,'0')}m`}
+function prettyDate(s){return new Date(s+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
+function refresh(){
+ const t=today(),r=records[t]||{}; $('todayLabel').textContent=new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+ $('todayTotal').textContent=duration(minutes(r));$('todayStart').textContent=fmtTime(r.start);$('todayEnd').textContent=fmtTime(r.end);
+ $('todayStatus').textContent=r.start&&r.end?'Workday completed':r.start?'Started — remember to record your end time':r.end?'End time saved — add a start time':'No work time recorded yet';
+ $('startBtn').disabled=!!r.start;$('endBtn').disabled=!r.start||!!r.end;
+ const p=$('period').value,now=new Date(),keys=Object.keys(records).filter(k=>records[k]?.start&&records[k]?.end).sort().reverse();
+ const filtered=keys.filter(k=>{if(p==='all')return true;const d=new Date(k+'T12:00:00');if(p==='month')return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();const start=new Date(now);start.setDate(now.getDate()-((now.getDay()+6)%7));start.setHours(0,0,0,0);return d>=start&&d<=now});
+ const total=filtered.reduce((s,k)=>s+minutes(records[k]),0);$('daysStat').textContent=filtered.length;$('hoursStat').textContent=duration(total);$('avgStat').textContent=filtered.length?duration(Math.round(total/filtered.length)):'0h';
+ $('history').innerHTML=keys.length?keys.map(k=>{const x=records[k];return `<div class="record"><div><div class="record-date">${prettyDate(k)}</div><div class="record-meta">${fmtTime(x.start)} – ${fmtTime(x.end)}${x.note?' · '+escapeHtml(x.note):''}</div></div><div class="record-right"><div class="record-hours">${duration(minutes(x))}</div><div><button class="mini" data-edit="${k}">Edit</button><button class="mini danger" data-delete="${k}">Delete</button></div></div></div>`}).join(''):'<div class="empty">No completed workdays yet. Add your first one above.</div>';
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function setForm(k){const r=records[k]||{};editing=k;$('workDate').value=k;$('startTime').value=r.start||'';$('endTime').value=r.end||'';$('note').value=r.note||'';$('saveBtn').textContent='Update workday';$('workDate').scrollIntoView({behavior:'smooth',block:'center'})}
+function clearForm(){editing=null;$('workDate').value=today();$('startTime').value='';$('endTime').value='';$('note').value='';$('saveBtn').textContent='Save workday'}
+$('startBtn').onclick=()=>{const k=today();records[k]={...(records[k]||{}),start:new Date().toTimeString().slice(0,5)};persist();refresh();setForm(k)};
+$('endBtn').onclick=()=>{const k=today();records[k]={...(records[k]||{}),end:new Date().toTimeString().slice(0,5)};persist();refresh();setForm(k)};
+$('saveBtn').onclick=()=>{const k=$('workDate').value,s=$('startTime').value,e=$('endTime').value;if(!k){alert('Please choose a date.');return}if(!s&&!e){alert('Enter at least a start or end time.');return}records[k]={start:s,end:e,note:$('note').value.trim()};persist();clearForm();refresh()};
+$('clearBtn').onclick=clearForm;$('period').onchange=refresh;
+$('history').onclick=e=>{const edit=e.target.dataset.edit,del=e.target.dataset.delete;if(edit)setForm(edit);if(del&&confirm(`Delete the work record for ${prettyDate(del)}?`)){delete records[del];persist();refresh();if(editing===del)clearForm()}};
+$('exportBtn').onclick=()=>{const rows=[['Date','Start','End','Duration minutes','Note'],...Object.keys(records).sort().map(k=>[k,records[k].start||'',records[k].end||'',minutes(records[k]),records[k].note||''])];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='work-time-history.csv';a.click();URL.revokeObjectURL(a.href)};
+$('workDate').value=today();refresh();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
